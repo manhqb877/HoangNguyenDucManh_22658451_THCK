@@ -1,7 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite";
-import { Movie } from "../types/Movie";
+import { Movie } from "@/types/Movie";
 // Kiểu Movie (có thể đặt trong /types/movie.ts)
-
 
 // ===========================
 // INIT TABLE
@@ -29,13 +28,7 @@ export const createMovie = async (db: SQLiteDatabase, data: Movie) => {
   await db.runAsync(
     `INSERT INTO movies (title, year, watched, rating, created_at)
       VALUES (?, ?, ?, ?, ?)`,
-    [
-      data.title,
-      data.year ?? null,
-      data.watched ?? 0,
-      data.rating ?? null,
-      now,
-    ]
+    [data.title, data.year ?? null, data.watched ?? 0, data.rating ?? null, now]
   );
 };
 
@@ -50,10 +43,9 @@ export const getAll = async (db: SQLiteDatabase, isDeleted: number) => {
 };
 
 export const getById = async (db: SQLiteDatabase, id: number) => {
-  return await db.getFirstAsync<Movie>(
-    `SELECT * FROM movies WHERE id = ?`,
-    [id]
-  );
+  return await db.getFirstAsync<Movie>(`SELECT * FROM movies WHERE id = ?`, [
+    id,
+  ]);
 };
 
 // ===========================
@@ -64,12 +56,7 @@ export const updateMovie = async (db: SQLiteDatabase, data: Movie) => {
     `UPDATE movies
       SET title = ?, year = ?, rating = ?
       WHERE id = ?`,
-    [
-      data.title,
-      data.year ?? null,
-      data.rating ?? null,
-      data.id,
-    ]
+    [data.title, data.year ?? null, data.rating ?? null, data.id]
   );
 };
 
@@ -83,25 +70,16 @@ export const toggleWatched = async (
 ) => {
   const next = currentValue ? 0 : 1;
 
-  await db.runAsync(
-    `UPDATE movies SET watched = ? WHERE id = ?`,
-    [next, id]
-  );
+  await db.runAsync(`UPDATE movies SET watched = ? WHERE id = ?`, [next, id]);
 };
 
 // ===========================
 // DELETE (SOFT DELETE như file mẫu)
 // ===========================
 export const softDeleteMovie = async (db: SQLiteDatabase, id: number) => {
-  await db.runAsync(
-    `UPDATE movies SET isDeleted = 1 WHERE id = ?`,
-    [id]
-  );
+  await db.runAsync(`UPDATE movies SET isDeleted = 1 WHERE id = ?`, [id]);
 };
 
 export const restoreMovie = async (db: SQLiteDatabase, id: number) => {
-  await db.runAsync(
-    `UPDATE movies SET isDeleted = 0 WHERE id = ?`,
-    [id]
-  );
+  await db.runAsync(`UPDATE movies SET isDeleted = 0 WHERE id = ?`, [id]);
 };
